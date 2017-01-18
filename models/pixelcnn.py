@@ -17,7 +17,12 @@ def PixelCNN(input_shape, filters, blocks, softmax=False, build=True):
     model = MaskedConvolution2D(filters, 1, 1)(model)
 
     # How the fuck are we aligning it for output activation and activating it?
+    # TODO: Everything from here has to be changed.
     model = Flatten()(model)
+
+    # Discrete? ummm..
+    discrete = Dense(input_shape[0] * input_shape[1] * 256)
+    del discrete # Whops.
 
     # Continuous? Regressive?
     continuous = Dense(input_shape[0] * input_shape[1])
