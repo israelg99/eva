@@ -16,7 +16,7 @@ class MaskedConvolution2D(Convolution2D):
     def build(self, input_shape):
         super().build(input_shape)
 
-        self.mask = np.ones(self.get_weights()[0].shape)
+        self.mask = np.ones(self.W_shape)
 
         filter_size = self.mask.shape[0]
         filter_center = filter_size / 2
