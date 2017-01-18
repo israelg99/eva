@@ -19,7 +19,7 @@ def PixelCNN(input_shape, filters, blocks, softmax=False, build=True):
     model = Convolution2D(filters, 1, 1)(model)
     model = PReLU()(model)
 
-    # Against paper again, same as above, and also paper didn't mention solo filter but I assume it is obvious.
+    # Against paper again, same as above.
     model = Convolution2D(1, 1, 1)(model)
 
     if not softmax:
