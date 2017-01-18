@@ -10,23 +10,17 @@ def PixelCNN(input_shape, filters, blocks, softmax=False, build=True):
     input_map = Input(shape=input_shape)
 
     model = MaskedConvolution2D(filters, 7, 7, mask='A', border_mode='same')(input_map)
+    model = PReLU()(model) # Against paper, relu shouldn't be here.
 
     model = ResidualBlockList(model, filters, blocks)
+    # Against paper, should be relu here.
+
+    # Against paper, should be Convolution Mask B 1x1, which I am yet to make sense of.
+    model = Convolution2D(filters, 1, 1)(model)
     model = PReLU()(model)
 
-    model = MaskedConvolution2D(filters, 1, 1)(model)
-
-    # How the fuck are we aligning it for output activation and activating it?
-    # TODO: Everything from here has to be changed.
-    model = Flatten()(model)
-
-    # Discrete? ummm..
-    discrete = Dense(input_shape[0] * input_shape[1] * 256)
-    del discrete # Whops.
-
-    # Continuous? Regressive?
-    continuous = Dense(input_shape[0] * input_shape[1])
-    model = continuous(model)
+    # Against paper again, same as above, and also paper didn't mention solo filter but I assume it is obvious.
+    model = Convolution2D(1, 1, 1)(model)
 
     if not softmax:
         model = Activation('sigmoid')(model)
@@ -34,8 +28,9 @@ def PixelCNN(input_shape, filters, blocks, softmax=False, build=True):
         raise NotImplementedError()
 
     if build:
+        # (Potentially) Against paper, loss and optimizers are different.
         model = Model(input=input_map, output=model)
-        model.compile(loss='mse',
+        model.compile(loss='kld',
                       optimizer=Nadam(),
                       metrics=['accuracy'])
 
