@@ -1,4 +1,4 @@
-#%% Setup
+#%% Setup.
 from collections import namedtuple
 
 import numpy as np
@@ -15,18 +15,17 @@ from keras.utils.visualize_util import plot
 from keras import backend as K
 
 from eva.models.pixelcnn import PixelCNN
-from eva.util.mutil import Mutil
 
 Data = namedtuple('Data', 'x y')
 
 nb_classes = 10
 img_rows, img_cols = 28, 28
 
-nb_filters = 32
+nb_filters = 128
 blocks = 4
 
 batch_size = 128
-nb_epoch = 12
+nb_epoch = 4
 
 def clean_data(x, y, rows, cols):
     if K.image_dim_ordering() == 'th':
@@ -64,16 +63,13 @@ model.summary()
 
 plot(model)
 
-#%% Train
-model.fit(np.zeros(train.x.shape), train.x, batch_size=batch_size, nb_epoch=nb_epoch,
+#%% Train.
+model.fit(train.x, train.x, batch_size=batch_size, nb_epoch=nb_epoch,
           verbose=1, validation_data=(test.x, test.x))
 
-score = model.evaluate(np.zeros(test.x.shape), test.x, verbose=0)
+score = model.evaluate(test.x, test.x, verbose=0)
 print('Test score:', score[0])
 print('Test accuracy:', score[1])
 
-#%% Save weights
+#%% Save model.
 model.save('pixelcnn.h5')
-
-#%% Test
-Mutil.display_rgb_output(model, 10)
