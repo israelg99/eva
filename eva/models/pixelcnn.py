@@ -14,10 +14,10 @@ def PixelCNN(input_shape, filters, blocks, softmax=False, build=True):
 
     model = ResidualBlockList(model, filters, blocks)
 
-    model = Convolution2D(1, 1, 1)(model)
+    model = Convolution2D(filters//2, 1, 1)(model)
     model = PReLU()(model)
 
-    model = Convolution2D(1, 1, 1)(model)
+    model = Convolution2D(filters//2, 1, 1)(model)
     model = PReLU()(model)
 
     model = Convolution2D(1, 1, 1)(model)
