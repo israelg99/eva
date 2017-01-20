@@ -22,7 +22,7 @@ class MaskedConvolution2D(Convolution2D):
         filter_center = filter_size / 2
 
         self.mask[math.ceil(filter_center):] = 0
-        self.mask[math.floor(filter_center), math.ceil(filter_center):] = 0
+        self.mask[math.floor(filter_center):, math.ceil(filter_center):] = 0
 
         if self.mask is 'A':
             self.mask[math.floor(filter_center), math.floor(filter_center)] = 0
@@ -30,9 +30,22 @@ class MaskedConvolution2D(Convolution2D):
         self.mask = K.variable(self.mask)
 
     def call(self, x, mask=None):
+        print(self.W * self.mask)
+        print(K.eval(self.W * self.mask))
         """ TODO: learn what is this mask parameter and how to use it. """
-        self.W *= self.mask
-        return super().call(x, mask=mask)
+        output = K.conv2d(x, self.W * self.mask, strides=self.subsample,
+                          border_mode=self.border_mode,
+                          dim_ordering=self.dim_ordering,
+                          filter_shape=self.W_shape)
+        if self.bias:
+            if self.dim_ordering == 'th':
+                output += K.reshape(self.b, (1, self.nb_filter, 1, 1))
+            elif self.dim_ordering == 'tf':
+                output += K.reshape(self.b, (1, 1, 1, self.nb_filter))
+            else:
+                raise ValueError('Invalid dim_ordering:', self.dim_ordering)
+        output = self.activation(output)
+        return output
 
     def get_config(self):
         return dict(list(super().get_config().items()) + list({'mask': self.mask_type}.items()))
