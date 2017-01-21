@@ -16,7 +16,7 @@ def ResidualBlock(model, filters):
     # h -> 2h
     block = Convolution2D(filters, 1, 1)(block)
 
-    return PReLU()(Merge(mode='sum')([model, block]))
+    return PReLU()(merge([model, block], mode='sum'))
 
 def ResidualBlockList(model, filters, length):
     for _ in range(length):
