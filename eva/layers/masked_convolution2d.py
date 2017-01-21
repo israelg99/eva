@@ -24,7 +24,7 @@ class MaskedConvolution2D(Convolution2D):
         self.mask[math.ceil(filter_center):] = 0
         self.mask[math.floor(filter_center):, math.ceil(filter_center):] = 0
 
-        if self.mask is 'A':
+        if self.mask_type is 'A':
             self.mask[math.floor(filter_center), math.floor(filter_center)] = 0
 
         self.mask = K.variable(self.mask)
