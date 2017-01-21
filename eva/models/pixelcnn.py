@@ -28,7 +28,6 @@ def PixelCNN(input_shape, filters, blocks, softmax=False, build=True):
         raise NotImplementedError()
 
     if build:
-        # (Potentially) Against paper, loss and optimizers are different.
         model = Model(input=input_map, output=model)
         model.compile(loss='binary_crossentropy',
                       optimizer=Nadam(),
