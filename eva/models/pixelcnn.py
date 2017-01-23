@@ -30,7 +30,7 @@ def PixelCNN(input_shape, filters, blocks, softmax=False, build=True):
     if build:
         model = Model(input=input_map, output=model)
         model.compile(loss='binary_crossentropy',
-                      optimizer=Nadam(),
+                      optimizer=Nadam(clipnorm=1., clipvalue=1.),
                       metrics=['accuracy', 'fbeta_score', 'matthews_correlation'])
 
     return model
