@@ -13,8 +13,10 @@ from keras.layers.advanced_activations import PReLU
 from keras.utils import np_utils
 from keras.utils.visualize_util import plot
 from keras import backend as K
+from keras.callbacks import TensorBoard
 
 from eva.models.pixelcnn import PixelCNN
+from eva.util.nutil import binarize
 
 Data = namedtuple('Data', 'x y')
 
@@ -22,10 +24,10 @@ nb_classes = 10
 img_rows, img_cols = 28, 28
 
 nb_filters = 128
-blocks = 4
+blocks = 12
 
 batch_size = 128
-nb_epoch = 4
+nb_epoch = 40
 
 def clean_data(x, y, rows, cols):
     if K.image_dim_ordering() == 'th':
@@ -39,8 +41,7 @@ def clean_data(x, y, rows, cols):
 
     y = np_utils.to_categorical(y, nb_classes)
 
-    # New way
-    x[np.where(x > 0)] = 1
+    x = binarize(x)
 
     print('X shape:', x.shape)
     print(x.shape[0], 'samples')
@@ -65,7 +66,7 @@ plot(model)
 
 #%% Train.
 model.fit(train.x, train.x, batch_size=batch_size, nb_epoch=nb_epoch,
-          verbose=1, validation_data=(test.x, test.x))
+          verbose=1, validation_data=(test.x, test.x), callbacks=[TensorBoard()])
 
 score = model.evaluate(test.x, test.x, verbose=0)
 print('Test score:', score[0])
