@@ -8,7 +8,7 @@ from eva.layers.masked_convolution2d import MaskedConvolution2D
 from eva.util.mutil import infer
 from eva.util.nutil import to_rgb
 
-count = 1
+count = 10
 model = keras.models.load_model('eva/examples/pixelcnn.h5', custom_objects={'MaskedConvolution2D':MaskedConvolution2D})
 
 for image in [to_rgb(infer(model)) for _ in range(count)]:
