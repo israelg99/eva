@@ -30,7 +30,7 @@ class MaskedConvolution2D(Convolution2D):
         self.mask = K.variable(self.mask)
 
     def call(self, x, mask=None):
-        """ TODO: learn what is this mask parameter and how to use it. """
+        # TODO: learn what is this mask parameter and how to use it.
         output = K.conv2d(x, self.W * self.mask, strides=self.subsample,
                           border_mode=self.border_mode,
                           dim_ordering=self.dim_ordering,
