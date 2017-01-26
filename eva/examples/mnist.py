@@ -51,26 +51,18 @@ def clean_data(x, y, rows, cols):
 def get_data(rows, cols):
     return [Data(*clean_data(*data, rows, cols)) for data in mnist.load_data()]
 
-def get_input(rows, cols):
-    return (1, rows, cols) if K.image_dim_ordering() == 'th' else (rows, cols, 1)
-
 train, test = get_data(img_rows, img_cols)
-input_shape = get_input(img_rows, img_cols)
-input_dims = np.prod(input_shape)
+data = np.concatenate((train.x, test.x))
 
-model = PixelCNN(input_shape, nb_filters, blocks)
+model = PixelCNN(data.shape[1:], nb_filters, blocks)
 
 model.summary()
 
 plot(model)
 
 #%% Train.
-model.fit(train.x, train.x, batch_size=batch_size, nb_epoch=nb_epoch,
-          verbose=1, validation_data=(test.x, test.x), callbacks=[TensorBoard()])
-
-score = model.evaluate(test.x, test.x, verbose=0)
-print('Test score:', score[0])
-print('Test accuracy:', score[1])
+model.fit(data, data, batch_size=batch_size, nb_epoch=nb_epoch,
+          verbose=1, callbacks=[TensorBoard()])
 
 #%% Save model.
 model.save('pixelcnn.h5')
