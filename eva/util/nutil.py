@@ -6,3 +6,6 @@ def to_rgb(pixels):
 
 def binarize(arr, generate=np.random.uniform):
     return (generate(size=arr.shape) < arr).astype('i')
+
+def quantisize(arr, levels):
+    return (np.digitize(arr, np.arange(levels) / levels) - 1).astype('i')
