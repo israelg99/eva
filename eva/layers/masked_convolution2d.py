@@ -24,8 +24,14 @@ class MaskedConvolution2D(Convolution2D):
         self.mask[math.ceil(filter_center):] = 0
         self.mask[math.floor(filter_center):, math.ceil(filter_center):] = 0
 
-        if self.mask_type is 'A':
-            self.mask[math.floor(filter_center), math.floor(filter_center)] = 0
+        op = np.greater_equal if self.mask_type == 'A' else np.greater
+
+        for j1 in range(self.mask.shape[2]):
+            for j2 in range(self.mask.shape[3]//self.mask.shape[2]):
+                for j3 in range(self.mask.shape[2]):
+                    if op(j1, j3):
+                        self.mask[math.floor(filter_center), math.floor(filter_center),
+                                  j1, j2*self.mask.shape[2]+j3] = 0
 
         self.mask = K.variable(self.mask)
 
