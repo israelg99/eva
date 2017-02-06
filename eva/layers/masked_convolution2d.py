@@ -6,9 +6,10 @@ from keras import backend as K
 from keras.layers import Convolution2D
 
 class MaskedConvolution2D(Convolution2D):
-    def __init__(self, *args, mask='B', **kwargs):
+    def __init__(self, *args, mask='B' , n_channels=3, **kwargs):
         super().__init__(*args, **kwargs)
         self.mask_type = mask
+        self.n_channels = n_channels
 
         # TODO: Define mask here? we can use filter_size and number of filters to predict the weights shape, however, build() is still a safer place for it.
         self.mask = None
@@ -26,12 +27,10 @@ class MaskedConvolution2D(Convolution2D):
 
         op = np.greater_equal if self.mask_type == 'A' else np.greater
 
-        for j1 in range(self.mask.shape[2]):
-            for j2 in range(self.mask.shape[3]//self.mask.shape[2]):
-                for j3 in range(self.mask.shape[2]):
-                    if op(j1, j3):
-                        self.mask[math.floor(filter_center), math.floor(filter_center),
-                                  j1, j2*self.mask.shape[2]+j3] = 0
+        for i in range(self.n_channels):
+            for j in range(self.n_channels):
+                if op(i, j):
+                    self.mask[math.floor(filter_center), math.floor(filter_center), i::self.n_channels, j::self.n_channels] = 0
 
         self.mask = K.variable(self.mask)
 
