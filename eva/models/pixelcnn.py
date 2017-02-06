@@ -1,5 +1,5 @@
 from keras.models import Model
-from keras.layers import Input, Convolution2D, Activation, Flatten, Dense, Reshape
+from keras.layers import Input, Convolution2D, Activation, Flatten, Dense, Reshape, Lambda
 from keras.layers.advanced_activations import PReLU
 from keras.engine.topology import merge
 from keras.optimizers import Nadam
@@ -21,31 +21,30 @@ def PixelCNN(input_shape, filters, blocks, build=True):
     model = MaskedConvolution2D(filters, 1, 1)(model)
     model = PReLU()(model)
 
-    model = MaskedConvolution2D(256*3, 1, 1)(model)
+    model = MaskedConvolution2D(filters, 1, 1)(model)
     model = PReLU()(model)
 
-    # TODO: Make is scalable to any amount of channels.
-    # TODO: SPARSE IT!!!!!
+    # TODO: Make it scalable to any amount of channels.
 
-    red = ColorExtract(0)(model)
+    red = MaskedConvolution2D(256, 1, 1)(model)
     red = Reshape((input_shape[0] * input_shape[1], 256))(red)
     red = Activation('softmax', name='red')(red)
 
-    green = ColorExtract(1)(model)
+    green = MaskedConvolution2D(256, 1, 1)(model)
     green = Reshape((input_shape[0] * input_shape[1], 256))(green)
     green = Activation('softmax', name='green')(green)
 
-    blue = ColorExtract(2)(model)
+    blue = MaskedConvolution2D(256, 1, 1)(model)
     blue = Reshape((input_shape[0] * input_shape[1], 256))(blue)
     blue = Activation('softmax', name='blue')(blue)
 
     # TODO: Make is scalable to any amount of channels.
-    # TODO: SPARSE IT!!!!!
+
     if build:
         model = Model(input=input_map, output=[red, green, blue])
         model.compile(optimizer=Nadam(clipnorm=1., clipvalue=1.),
-                      loss={    'red':   'categorical_crossentropy',
-                                'green': 'categorical_crossentropy',
-                                'blue':  'categorical_crossentropy'})
+                      loss={    'red':   'sparse_categorical_crossentropy',
+                                'green': 'sparse_categorical_crossentropy',
+                                'blue':  'sparse_categorical_crossentropy'})
 
     return model
