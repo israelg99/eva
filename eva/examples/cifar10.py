@@ -26,10 +26,10 @@ data_augmentation = True
 
 #%% Data.
 (train, _), (test, _) = cifar10.load_data()
-features = np.concatenate((train, test), axis=0)
+data = np.concatenate((train, test), axis=0)
 
-labels = np.dot(features, [0.299, 0.587, 0.114]).reshape(features.shape[0], features.shape[1]*features.shape[2], 1).astype(int)
-features = np.expand_dims(np.dot(features, [0.299, 0.587, 0.114]), -1)
+features = np.expand_dims(np.dot(data, [0.299, 0.587, 0.114]), -1)
+labels = features.reshape(features.shape[0], features.shape[1]*features.shape[2], features.shape[3]).astype(int)
 
 # TODO: Make is scalable to any amount of channels.
 # Such as: to_softmax(channel) for channel in data.shape[3].
@@ -41,8 +41,6 @@ model.summary()
 
 plot(model)
 
-K.eval(model.get_layer(index=1).mask)[3,3]
-
 #%% Train.
 # model.fit({'input_map': features},
 #           {'red': np.expand_dims(features[:, :, :, 0].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1),
@@ -51,6 +49,6 @@ K.eval(model.get_layer(index=1).mask)[3,3]
 #            'blue': np.expand_dims(features[:, :, :, 2].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1)},
 #           batch_size=batch_size, nb_epoch=nb_epoch,
 
-model.fit(features, labels,
+model.fit(data, data,
           batch_size=batch_size, nb_epoch=nb_epoch,
           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
