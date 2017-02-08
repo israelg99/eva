@@ -5,12 +5,12 @@ from scipy.ndimage import zoom
 import keras
 
 from eva.layers.masked_convolution2d import MaskedConvolution2D
+from eva.layers.fuckingsoftmax import FuckingSoftmax
 from eva.util.mutil import generate
-
 
 count = 10
 
-model = keras.models.load_model('eva/examples/model.h5', custom_objects={'MaskedConvolution2D':MaskedConvolution2D})
+model = keras.models.load_model('eva/examples/model.h5', custom_objects={'MaskedConvolution2D':MaskedConvolution2D, 'FuckingSoftmax':FuckingSoftmax})
 
 import numpy as np
 pixels = np.zeros(shape=model.input_shape[1:])
