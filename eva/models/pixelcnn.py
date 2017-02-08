@@ -27,7 +27,7 @@ def PixelCNN(input_shape, filters, blocks, build=True):
 
     # TODO: Make it scalable to any amount of channels.
 
-    model = Reshape((*input_shape[:2], 3, 256))
+    model = Reshape((*input_shape[:2], 3, 256))(model)
     model = FuckingSoftmax()(model)
 
     # model = MaskedConvolution2D(256, 1, 1)(model)
