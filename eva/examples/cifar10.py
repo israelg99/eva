@@ -28,14 +28,17 @@ data_augmentation = True
 (train, _), (test, _) = cifar10.load_data()
 data = np.concatenate((train, test), axis=0)
 
-features = np.expand_dims(np.dot(data, [0.299, 0.587, 0.114]), -1)
-labels = features.reshape(features.shape[0], features.shape[1]*features.shape[2], features.shape[3]).astype(int)
+features_3c = data
+labels_3c = np.expand_dims(features_3c, -1)
+
+features_1c = np.expand_dims(np.dot(data, [0.299, 0.587, 0.114]), -1)
+labels_1c = features.reshape(features.shape[0], features.shape[1]*features.shape[2], features.shape[3]).astype(int)
 
 # TODO: Make is scalable to any amount of channels.
 # Such as: to_softmax(channel) for channel in data.shape[3].
 
 #%% Model.
-model = PixelCNN(features.shape[1:], 128, 12)
+model = PixelCNN(data.shape[1:], 128, 12)
 
 model.summary()
 
@@ -49,6 +52,6 @@ plot(model)
 #            'blue': np.expand_dims(features[:, :, :, 2].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1)},
 #           batch_size=batch_size, nb_epoch=nb_epoch,
 
-model.fit(data, data,
+model.fit(features_3c, labels_3c,
           batch_size=batch_size, nb_epoch=nb_epoch,
           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
