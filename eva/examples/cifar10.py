@@ -29,16 +29,16 @@ data_augmentation = True
 data = np.concatenate((train, test), axis=0)
 
 features_3c = data
-labels_3c = np.expand_dims(features_3c, -1)
+labels_3c = np.expand_dims(features_3c.reshape(features_3c.shape[0], features_3c.shape[1]*features_3c.shape[2], features_3c.shape[3]), -1)
 
 features_1c = np.expand_dims(np.dot(data, [0.299, 0.587, 0.114]), -1)
-labels_1c = features.reshape(features.shape[0], features.shape[1]*features.shape[2], features.shape[3]).astype(int)
+labels_1c = features_1c.reshape(features_1c.shape[0], features_1c.shape[1]*features_1c.shape[2], features_1c.shape[3]).astype(int)
 
 # TODO: Make is scalable to any amount of channels.
 # Such as: to_softmax(channel) for channel in data.shape[3].
 
 #%% Model.
-model = PixelCNN(data.shape[1:], 128, 12)
+model = PixelCNN(features_3c.shape[1:], 128, 12)
 
 model.summary()
 
@@ -52,6 +52,6 @@ plot(model)
 #            'blue': np.expand_dims(features[:, :, :, 2].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1)},
 #           batch_size=batch_size, nb_epoch=nb_epoch,
 
-model.fit(features_3c, labels_3c,
+model.fit(features_3c, labels_1c,
           batch_size=batch_size, nb_epoch=nb_epoch,
           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])

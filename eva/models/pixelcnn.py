@@ -27,7 +27,11 @@ def PixelCNN(input_shape, filters, blocks, build=True):
 
     # TODO: Make it scalable to any amount of channels.
 
-    model = Reshape((*input_shape[:2], 3, 256))(model)
+    # model = Reshape((input_shape[0] * input_shape[1], 3, 256))(model)
+    # model = FuckingSoftmax()(model)
+
+    model = MaskedConvolution2D(256, 1, 1)(model)
+    model = Reshape((input_shape[0] * input_shape[1], 256))(model)
     model = FuckingSoftmax()(model)
 
     # model = MaskedConvolution2D(256, 1, 1)(model)
@@ -59,3 +63,7 @@ def PixelCNN(input_shape, filters, blocks, build=True):
                       loss='sparse_categorical_crossentropy')
 
     return model
+
+def scc(y_true, y_pred):
+    import tensorflow as tf
+    tf.nn.sparse_softmax_cross_entropy_with_logits(labels=targets, logits=logits)
