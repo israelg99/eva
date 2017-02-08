@@ -28,6 +28,9 @@ data_augmentation = True
 (train, _), (test, _) = cifar10.load_data()
 features = np.concatenate((train, test), axis=0)
 
+labels = np.dot(features, [0.299, 0.587, 0.114]).reshape(features.shape[0], features.shape[1]*features.shape[2], 1).astype(int)
+features = np.expand_dims(np.dot(features, [0.299, 0.587, 0.114]), -1)
+
 # TODO: Make is scalable to any amount of channels.
 # Such as: to_softmax(channel) for channel in data.shape[3].
 
@@ -38,13 +41,16 @@ model.summary()
 
 plot(model)
 
+K.eval(model.get_layer(index=1).mask)[3,3]
+
 #%% Train.
-model.fit({'input_map': features},
-          {'red': np.expand_dims(features[:, :, :, 0].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1),
-           'green': np.expand_dims(features[:, :, :, 1].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1),
-           'blue': np.expand_dims(features[:, :, :, 2].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1)},
+# model.fit({'input_map': features},
+#           {'red': np.expand_dims(features[:, :, :, 0].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1),
+#           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
+#            'green': np.expand_dims(features[:, :, :, 1].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1),
+#            'blue': np.expand_dims(features[:, :, :, 2].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1)},
+#           batch_size=batch_size, nb_epoch=nb_epoch,
+
+model.fit(features, labels,
           batch_size=batch_size, nb_epoch=nb_epoch,
           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
-
-#%% Save model.
-model.save('pixelcnn.h5')
