@@ -7,7 +7,6 @@ import keras.backend as K
 
 from eva.layers.residual_block import ResidualBlockList
 from eva.layers.masked_convolution2d import MaskedConvolution2D
-from eva.layers.fuckingsoftmax import FuckingSoftmax
 
 def PixelCNN(input_shape, filters, blocks, build=True):
     width, height, channels = input_shape
