@@ -30,32 +30,17 @@ data = np.concatenate((train, test), axis=0)
 data = data.astype('float32')
 data /= 255
 
-features_3c = data
-labels_3c = np.expand_dims(features_3c.reshape(features_3c.shape[0], features_3c.shape[1]*features_3c.shape[2], features_3c.shape[3]), -1)
-
-features_1c = np.expand_dims(np.dot(data, [0.299, 0.587, 0.114]), -1)
-labels_1c = features_1c.reshape(features_1c.shape[0], features_1c.shape[1]*features_1c.shape[2], features_1c.shape[3]).astype(int)
-
-# TODO: Make is scalable to any amount of channels.
-# Such as: to_softmax(channel) for channel in data.shape[3].
-
 #%% Model.
-model = PixelCNN(features_3c.shape[1:], 128, 12)
+model = PixelCNN(data.shape[1:], 128, 12)
 
 model.summary()
 
 plot(model)
 
-features_3c
-
 #%% Train.
-model.fit({'input_map': features_3c},
-          {'red': np.expand_dims(features_3c[:, :, :, 0].reshape(features_3c.shape[0], features_3c.shape[1]*features_3c.shape[2]), -1),
-           'green': np.expand_dims(features_3c[:, :, :, 1].reshape(features_3c.shape[0], features_3c.shape[1]*features_3c.shape[2]), -1),
-           'blue': np.expand_dims(features_3c[:, :, :, 2].reshape(features_3c.shape[0], features_3c.shape[1]*features_3c.shape[2]), -1)},
+model.fit({'input_map': data},
+          {'red': (np.expand_dims(data[:, :, :, 0].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
+           'green': (np.expand_dims(data[:, :, :, 1].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
+           'blue': (np.expand_dims(data[:, :, :, 2].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int)},
           batch_size=batch_size, nb_epoch=nb_epoch,
           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
-
-# model.fit(features_3c, labels_1c,
-#           batch_size=batch_size, nb_epoch=nb_epoch,
-#           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
