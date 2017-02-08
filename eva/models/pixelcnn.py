@@ -26,17 +26,6 @@ def PixelCNN(input_shape, filters, blocks, build=True):
 
     # TODO: Make it scalable to any amount of channels.
 
-    # model = Reshape((input_shape[0] * input_shape[1], 3, 256))(model)
-    # model = FuckingSoftmax()(model)
-
-    # model = MaskedConvolution2D(256, 1, 1)(model)
-    # model = Reshape((input_shape[0] * input_shape[1], 256))(model)
-    # model = FuckingSoftmax()(model)
-
-    # model = MaskedConvolution2D(256, 1, 1)(model)
-    # model = Reshape((input_shape[0] * input_shape[1], 256))(model)
-    # model = Activation('softmax')(model)
-
     red = MaskedConvolution2D(256, 1, 1)(model)
     red = Reshape((input_shape[0] * input_shape[1], 256))(red)
     red = Activation('softmax', name='red')(red)
@@ -57,8 +46,5 @@ def PixelCNN(input_shape, filters, blocks, build=True):
                       loss={    'red':   'sparse_categorical_crossentropy',
                                 'green': 'sparse_categorical_crossentropy',
                                 'blue':  'sparse_categorical_crossentropy'})
-        # model = Model(input=input_map, output=model)
-        # model.compile(optimizer=Nadam(),
-        #               loss='sparse_categorical_crossentropy')
 
     return model
