@@ -12,11 +12,9 @@ from keras.optimizers import Nadam
 from keras.layers.advanced_activations import PReLU
 from keras.utils import np_utils
 from keras.utils.visualize_util import plot
-from keras import backend as K
 from keras.callbacks import TensorBoard, ModelCheckpoint
 
 from eva.models.pixelcnn import PixelCNN
-from eva.util.nutil import quantisize
 
 #%% Arguments.
 batch_size = 32
