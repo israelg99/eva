@@ -104,3 +104,6 @@ kernel-*
 
 # Quiver
 tmp
+
+# Logs
+logs
