@@ -3,10 +3,11 @@ from keras.layers import Input, Convolution2D, Activation, Flatten, Dense, Resha
 from keras.layers.advanced_activations import PReLU
 from keras.engine.topology import merge
 from keras.optimizers import Nadam
+import keras.backend as K
 
 from eva.layers.residual_block import ResidualBlockList
 from eva.layers.masked_convolution2d import MaskedConvolution2D
-from eva.layers.color_extract import ColorExtract
+from eva.layers.fuckingsoftmax import FuckingSoftmax
 
 def PixelCNN(input_shape, filters, blocks, build=True):
     width, height, channels = input_shape
@@ -21,14 +22,17 @@ def PixelCNN(input_shape, filters, blocks, build=True):
     model = MaskedConvolution2D(filters, 1, 1)(model)
     model = PReLU()(model)
 
-    model = MaskedConvolution2D(256*3, 1, 1)(model)
+    model = MaskedConvolution2D(3*256, 1, 1)(model)
     model = PReLU()(model)
 
     # TODO: Make it scalable to any amount of channels.
 
-    model = MaskedConvolution2D(256, 1, 1)(model)
-    model = Reshape((input_shape[0] * input_shape[1], 256))(model)
-    model = Activation('softmax')(model)
+    model = Reshape((*input_shape[:2], 3, 256))
+    model = FuckingSoftmax()(model)
+
+    # model = MaskedConvolution2D(256, 1, 1)(model)
+    # model = Reshape((input_shape[0] * input_shape[1], 256))(model)
+    # model = Activation('softmax')(model)
 
     # red = MaskedConvolution2D(256, 1, 1)(model)
     # red = Reshape((input_shape[0] * input_shape[1], 256))(red)
