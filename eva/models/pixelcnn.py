@@ -63,7 +63,3 @@ def PixelCNN(input_shape, filters, blocks, build=True):
                       loss='sparse_categorical_crossentropy')
 
     return model
-
-def scc(y_true, y_pred):
-    import tensorflow as tf
-    tf.nn.sparse_softmax_cross_entropy_with_logits(labels=targets, logits=logits)
