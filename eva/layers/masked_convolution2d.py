@@ -6,7 +6,7 @@ from keras import backend as K
 from keras.layers import Convolution2D
 
 class MaskedConvolution2D(Convolution2D):
-    def __init__(self, *args, mask='B' , n_channels=3, mono=True, **kwargs):
+    def __init__(self, *args, mask='B' , n_channels=3, mono=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.mask_type = mask
         self.n_channels = n_channels
