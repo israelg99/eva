@@ -27,13 +27,13 @@ class MaskedConvolution2D(Convolution2D):
 
         op = np.greater_equal if self.mask_type == 'A' else np.greater
 
-        # for i in range(self.n_channels):
-        #     for j in range(self.n_channels):
-        #         if op(i, j):
-        #             self.mask[math.floor(filter_center), math.floor(filter_center), i::self.n_channels, j::self.n_channels] = 0
+        for i in range(self.n_channels):
+            for j in range(self.n_channels):
+                if op(i, j):
+                    self.mask[math.floor(filter_center), math.floor(filter_center), i::self.n_channels, j::self.n_channels] = 0
 
-        if self.mask_type == 'A':
-            self.mask[math.floor(filter_center), math.floor(filter_center)] = 0
+        # if self.mask_type == 'A':
+        #     self.mask[math.floor(filter_center), math.floor(filter_center)] = 0
 
         self.mask = K.variable(self.mask)
 
