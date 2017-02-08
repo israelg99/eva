@@ -30,13 +30,13 @@ def PixelCNN(input_shape, filters, blocks, build=True):
     # model = Reshape((input_shape[0] * input_shape[1], 3, 256))(model)
     # model = FuckingSoftmax()(model)
 
-    model = MaskedConvolution2D(256, 1, 1)(model)
-    model = Reshape((input_shape[0] * input_shape[1], 256))(model)
-    model = FuckingSoftmax()(model)
-
     # model = MaskedConvolution2D(256, 1, 1)(model)
     # model = Reshape((input_shape[0] * input_shape[1], 256))(model)
-    # model = Activation('softmax')(model)
+    # model = FuckingSoftmax()(model)
+
+    model = MaskedConvolution2D(256, 1, 1)(model)
+    model = Reshape((input_shape[0] * input_shape[1], 256))(model)
+    model = Activation('softmax')(model)
 
     # red = MaskedConvolution2D(256, 1, 1)(model)
     # red = Reshape((input_shape[0] * input_shape[1], 256))(red)
