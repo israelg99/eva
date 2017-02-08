@@ -1,7 +1,7 @@
 from keras import backend as K
 from keras.layers import Layer
 
-
+# TODO REMOVE
 class ColorExtract(Layer):
     """ TODO: Make is scalable to any amount of channels. """
     def __init__(self, channel, **kwargs):
