@@ -27,6 +27,8 @@ data_augmentation = True
 #%% Data.
 (train, _), (test, _) = cifar10.load_data()
 data = np.concatenate((train, test), axis=0)
+data = data.astype('float32')
+data /= 255
 
 features_3c = data
 labels_3c = np.expand_dims(features_3c.reshape(features_3c.shape[0], features_3c.shape[1]*features_3c.shape[2], features_3c.shape[3]), -1)
@@ -44,14 +46,16 @@ model.summary()
 
 plot(model)
 
-#%% Train.
-# model.fit({'input_map': features},
-#           {'red': np.expand_dims(features[:, :, :, 0].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1),
-#           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
-#            'green': np.expand_dims(features[:, :, :, 1].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1),
-#            'blue': np.expand_dims(features[:, :, :, 2].reshape(features.shape[0], features.shape[1]*features.shape[2]), -1)},
-#           batch_size=batch_size, nb_epoch=nb_epoch,
+features_3c
 
-model.fit(features_3c, labels_1c,
+#%% Train.
+model.fit({'input_map': features_3c},
+          {'red': np.expand_dims(features_3c[:, :, :, 0].reshape(features_3c.shape[0], features_3c.shape[1]*features_3c.shape[2]), -1),
+           'green': np.expand_dims(features_3c[:, :, :, 1].reshape(features_3c.shape[0], features_3c.shape[1]*features_3c.shape[2]), -1),
+           'blue': np.expand_dims(features_3c[:, :, :, 2].reshape(features_3c.shape[0], features_3c.shape[1]*features_3c.shape[2]), -1)},
           batch_size=batch_size, nb_epoch=nb_epoch,
           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
+
+# model.fit(features_3c, labels_1c,
+#           batch_size=batch_size, nb_epoch=nb_epoch,
+#           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
