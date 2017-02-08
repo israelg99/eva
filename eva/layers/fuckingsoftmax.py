@@ -8,6 +8,3 @@ class FuckingSoftmax(Layer):
 
     def call(self, x, mask=None):
         return tf.nn.softmax(x)
-
-    def get_config(self):
-        return dict(list(super().get_config().items()) + list({'fucking': True}.items()))
