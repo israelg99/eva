@@ -29,11 +29,7 @@ data = data.astype('float32')
 data /= 255
 
 #%% Model.
-model = PixelCNN(data.shape[1:], 128, 12)
-
-model.summary()
-
-plot(model)
+model = PixelCNN(data.shape[1:], 128//data.shape[-1]*data.shape[-1], 12)
 
 #%% Train.
 model.fit({'input_map': data},
