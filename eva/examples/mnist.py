@@ -13,7 +13,7 @@ from keras.layers.advanced_activations import PReLU
 from keras.utils import np_utils
 from keras.utils.visualize_util import plot
 from keras import backend as K
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, ModelCheckpoint
 
 from eva.models.pixelcnn import PixelCNN
 
@@ -66,7 +66,3 @@ model.fit({'input_map': data},
            'blue': (np.expand_dims(data[:, :, :, 2].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int)},
           batch_size=batch_size, nb_epoch=nb_epoch,
           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
-
-
-#%% Save model.
-model.save('pixelcnn.h5')
