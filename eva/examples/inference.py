@@ -8,13 +8,12 @@ import keras
 import keras.backend as K
 
 from eva.layers.masked_convolution2d import MaskedConvolution2D
-from eva.models.pixelcnn import image_categorical_crossentropy
 
 from eva.util.mutil import generate
 
 COUNT = 10
 
-M = keras.models.load_model('eva/examples/model.h5', custom_objects={'MaskedConvolution2D':MaskedConvolution2D, 'image_categorical_crossentropy':image_categorical_crossentropy})
+M = keras.models.load_model('eva/examples/model.h5', custom_objects={'MaskedConvolution2D':MaskedConvolution2D})
 
 #%% Mask A.
 a = M.get_layer(index=1)
@@ -57,7 +56,7 @@ r=(np.expand_dims(data[:, :, :, 0].reshape(data.shape[0], data.shape[1]*data.sha
 g=(np.expand_dims(data[:, :, :, 1].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int)
 b=(np.expand_dims(data[:, :, :, 2].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int)
 
-plt.imshow(np.concatenate((r,g,b), axis=2)[1].reshape(32,32,3)/255, interpolation='nearest')
+plt.imshow(np.concatenate((r,g,b), axis=2)[1].reshape(28,28,3)/255, interpolation='nearest')
 plt.show()
 plt.imshow(data[1], interpolation='nearest')
 plt.show()
