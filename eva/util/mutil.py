@@ -13,5 +13,4 @@ def generate(model, deterministic=False):
                     pixels[row, col, channel] = to_255(np.argmax(get_color(model, pixels, row, col, channel)))
                     continue
                 pixels[row, col, channel] = to_255(np.random.choice(256, p=get_color(model, pixels, row, col, channel)))
-
     return pixels
