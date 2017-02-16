@@ -14,9 +14,9 @@ def PixelCNN(input_shape, filters, blocks, build=True):
     input_map = Input(shape=input_shape, name='input_map')
 
     model = MaskedConvolution2D(filters, 7, 7, mask='A', border_mode='same')(input_map)
-    model = PReLU()(model)
 
     model = ResidualBlockList(model, filters, blocks)
+    model = PReLU()(model)
 
     model = MaskedConvolution2D(filters, 1, 1)(model)
     model = PReLU()(model)
