@@ -15,6 +15,7 @@ from keras.utils.visualize_util import plot
 from keras.callbacks import TensorBoard, ModelCheckpoint
 
 from eva.models.pixelcnn import PixelCNN
+from eva.models.gated_pixelcnn import GatedPixelCNN
 
 #%% Arguments.
 batch_size = 32
@@ -29,12 +30,16 @@ data = data.astype('float32')
 data /= 255
 
 #%% Model.
-model = PixelCNN(data.shape[1:], 128//data.shape[-1]*data.shape[-1], 12)
+# model = PixelCNN(data.shape[1:], 128//data.shape[-1]*data.shape[-1], 12)
+model = GatedPixelCNN(data.shape[1:], 128//data.shape[-1]*data.shape[-1], 12)
 
 #%% Train.
-model.fit({'input_map': data},
-          {'red': (np.expand_dims(data[:, :, :, 0].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
-           'green': (np.expand_dims(data[:, :, :, 1].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
-           'blue': (np.expand_dims(data[:, :, :, 2].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int)},
+# model.fit({'input_map': data},
+#           {'red': (np.expand_dims(data[:, :, :, 0].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
+#            'green': (np.expand_dims(data[:, :, :, 1].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
+#            'blue': (np.expand_dims(data[:, :, :, 2].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int)},
+#           batch_size=batch_size, nb_epoch=nb_epoch,
+#           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
+model.fit(data, (np.expand_dims(data.reshape(data.shape[0], data.shape[1]*data.shape[2], data.shape[3]), -1)*255).astype(int))
           batch_size=batch_size, nb_epoch=nb_epoch,
-          verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
+          verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)])
