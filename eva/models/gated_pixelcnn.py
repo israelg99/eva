@@ -39,10 +39,5 @@ def GatedPixelCNN(input_shape, filters, blocks, latent=0, build=True):
     if build:
         model = Model(input=[input_img, latent_vector] if latent != 0 else input_img, output=outs)
         model.compile(optimizer=Nadam(), loss='binary_crossentropy' if channels == 1 else 'sparse_categorical_crossentropy')
-        # model = Model(input=input_img, output=[red, green, blue])
-        # model.compile(optimizer=Nadam(),
-        #               loss={    'red':   'sparse_categorical_crossentropy',
-        #                         'green': 'sparse_categorical_crossentropy',
-        #                         'blue':  'sparse_categorical_crossentropy'})
 
     return model
