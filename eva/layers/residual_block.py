@@ -3,23 +3,32 @@ from keras.layers.advanced_activations import PReLU
 
 from eva.layers.masked_convolution2d import MaskedConvolution2D
 
-def ResidualBlock(model, filters):
-    # 2h -> h
-    block = PReLU()(model)
-    block = MaskedConvolution2D(filters//2, 1, 1)(block)
+class ResidualBlock(object):
+    def __init__(self, filters):
+        self.filters = filters
 
-    # h 3x3 -> h
-    block = PReLU()(block)
-    block = MaskedConvolution2D(filters//2, 3, 3, border_mode='same')(block)
+    def __call__(self, model):
+        # 2h -> h
+        block = PReLU()(model)
+        block = MaskedConvolution2D(self.filters//2, 1, 1)(block)
 
-    # h -> 2h
-    block = PReLU()(block)
-    block = MaskedConvolution2D(filters, 1, 1)(block)
+        # h 3x3 -> h
+        block = PReLU()(block)
+        block = MaskedConvolution2D(self.filters//2, 3, 3, border_mode='same')(block)
 
-    return Merge(mode='sum')([model, block])
+        # h -> 2h
+        block = PReLU()(block)
+        block = MaskedConvolution2D(self.filters, 1, 1)(block)
 
-def ResidualBlockList(model, filters, length):
-    for _ in range(length):
-        model = ResidualBlock(model, filters)
+        return Merge(mode='sum')([model, block])
 
-    return model
+class ResidualBlockList(object):
+    def __init__(self, filters, length):
+        self.filters = filters
+        self.length = length
+
+    def __call__(self, model):
+        for _ in range(self.length):
+            model = ResidualBlock(self.filters)(model)
+
+        return model
