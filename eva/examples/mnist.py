@@ -18,56 +18,25 @@ from keras.callbacks import TensorBoard, ModelCheckpoint
 from eva.models.pixelcnn import PixelCNN
 from eva.models.gated_pixelcnn import GatedPixelCNN
 
-Data = namedtuple('Data', 'x y')
+#%% Data.
+(train, _), (test, _) = mnist.load_data()
+data = np.concatenate((train, test), axis=0)
+data = data.astype('float32')
+data /= 255
+data = np.repeat(np.expand_dims(data, -1), 3, -1)
 
-nb_classes = 10
-img_rows, img_cols = 28, 28
-
-nb_filters = 128
-blocks = 1
-
-batch_size = 128
-nb_epoch = 40
-
-def clean_data(x, y, rows, cols):
-    if K.image_dim_ordering() == 'th':
-        x = x.reshape(x.shape[0], 1, rows, cols)
-        input_shape = (1, rows, cols)
-    else:
-        x = x.reshape(x.shape[0], rows, cols, 1)
-        input_shape = (rows, cols, 1)
-
-    x = x.astype('float32') / 255
-
-    y = np_utils.to_categorical(y, nb_classes)
-
-    print('X shape:', x.shape)
-    print(x.shape[0], 'samples')
-
-    return x, y
-
-def get_data(rows, cols):
-    return [Data(*clean_data(*data, rows, cols)) for data in mnist.load_data()]
-
-train, test = get_data(img_rows, img_cols)
-data = np.concatenate((train.x, test.x))
-
-data = np.repeat(data, 3, -1)
-
-model = GatedPixelCNN(data.shape[1:], nb_filters, blocks)
+#%% Model.
+# model = PixelCNN(data.shape[1:], 126, 1)
+model = GatedPixelCNN(data.shape[1:], 126, 1)
 
 model.summary()
 
 plot(model)
 
 #%% Train.
-# model.fit(data, data,
-#           batch_size=batch_size, nb_epoch=nb_epoch,
-#           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
-
 model.fit(data,
           [(np.expand_dims(data[:, :, :, 0].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
            (np.expand_dims(data[:, :, :, 1].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
            (np.expand_dims(data[:, :, :, 2].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int)],
-          batch_size=batch_size, nb_epoch=nb_epoch,
-          verbose=1, callbacks=[ModelCheckpoint('model.h5', save_weights_only=True)]) # Only weights because Keras is a bitch.
+          batch_size=32, nb_epoch=40,
+          verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)]) # Only weights because Keras is a bitch.
