@@ -7,13 +7,14 @@ from scipy.ndimage import zoom
 import keras
 import keras.backend as K
 
-from eva.layers.masked_convolution2d import MaskedConvolution2D
+from eva.models.gated_pixelcnn import GatedPixelCNN
 
 from eva.util.mutil import generate
 
 COUNT = 10
 
-M = keras.models.load_model('eva/examples/model.h5', custom_objects={'MaskedConvolution2D':MaskedConvolution2D})
+M = GatedPixelCNN((28, 28, 3), 126, 1)
+M.load_weights('eva/examples/model.h5')
 
 #%% Mask A.
 a = M.get_layer(index=1)
