@@ -11,29 +11,6 @@ class GatedCNN(object):
         self.filters = filters
         self.h = h
 
-    # def __call__(self, model):
-    #     v_model = PaddedConvolution2D(self.filters, 7, 'vertical')(model)
-    #     feed_vertical = FeedVertical(self.filters)(v_model)
-    #     v_model = GatedBlock(self.filters, h=self.h)(v_model)
-
-    #     h_model = PaddedConvolution2D(self.filters, 7, 'horizontal', 'A')(model)
-    #     h_model = GatedBlock(self.filters, 'horizontal', v_map=feed_vertical, h=self.h, crop_right=True)(h_model)
-    #     h_model = Convolution2D(self.filters, 1, 1, border_mode='valid')(h_model)
-
-    #     return (v_model, h_model)
-
-    # def __call__(self, v_model, h_model):
-    #     v_model = PaddedConvolution2D(self.filters, 7, 'vertical')(v_model)
-    #     feed_vertical = FeedVertical(self.filters)(v_model)
-    #     v_model = GatedBlock(self.filters, h=self.h)(v_model)
-
-    #     h_model_new = PaddedConvolution2D(self.filters, 7, 'horizontal', 'A')(h_model)
-    #     h_model_new = GatedBlock(self.filters, 'horizontal', v_map=feed_vertical, h=self.h, crop_right=True)(h_model_new)
-    #     h_model_new = Convolution2D(self.filters, 1, 1, border_mode='valid')(h_model_new)
-    #     h_model = Merge(mode='sum')([h_model_new, h_model])
-
-    #     return (v_model, h_model)
-
     def __call__(self, model1, model2=None):
         if model2 is None:
             h_model = model1
