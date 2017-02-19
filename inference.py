@@ -1,12 +1,6 @@
 #%% Setup.
-import numpy as np
-
 from matplotlib import pyplot as plt
 from scipy.ndimage import zoom
-
-import keras
-from keras.utils import np_utils
-import keras.backend as K
 
 from eva.models.gated_pixelcnn import GatedPixelCNN
 
