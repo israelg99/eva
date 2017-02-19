@@ -18,19 +18,21 @@ from eva.models.pixelcnn import PixelCNN
 from eva.models.gated_pixelcnn import GatedPixelCNN
 
 #%% Data.
-(train, _), (test, _) = cifar10.load_data()
+(train, train_l), (test, test_l) = cifar10.load_data()
 data = np.concatenate((train, test), axis=0)
 data = data.astype('float32')
 data /= 255
 
+labels = np.concatenate((train_l, test_l), axis=0)
+
 #%% Model.
 # model = PixelCNN(data.shape[1:], 126, 1)
-model = GatedPixelCNN(data.shape[1:], 126, 12)
+model = GatedPixelCNN(data.shape[1:], 126, 1, 1)
 
 #%% Train.
-model.fit(data,
+model.fit([data, labels]
           [(np.expand_dims(data[:, :, :, 0].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
            (np.expand_dims(data[:, :, :, 1].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
            (np.expand_dims(data[:, :, :, 2].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int)],
-          batch_size=32, nb_epoch=40,
+          batch_size=32, nb_epoch=200,
           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)]) # Only weights because Keras is a bitch.
