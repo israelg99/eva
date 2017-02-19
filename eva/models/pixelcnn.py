@@ -9,7 +9,7 @@ from eva.layers.residual_block import ResidualBlockList
 from eva.layers.masked_convolution2d import MaskedConvolution2D
 
 def PixelCNN(input_shape, filters, blocks, build=True):
-    width, height, channels = input_shape
+    height, width, channels = input_shape
 
     input_map = Input(shape=input_shape, name='input_map')
 
@@ -25,13 +25,13 @@ def PixelCNN(input_shape, filters, blocks, build=True):
     if channels == 1:
         outs = Convolution2D(1, 1, 1, activation='sigmoid', border_mode='valid')(model)
     else:
-        model = MaskedConvolution2D(channels*256, 1, 1, name='channels_mult_palette')(model)
-        model = Reshape((input_shape[0], input_shape[1], 256, input_shape[2]), name='palette_channels')(model)
+        out = MaskedConvolution2D(channels*256, 1, 1, name='channels_mult_palette')(model)
+        out = Reshape((height, width, 256, channels), name='palette_channels')(out)
 
         outs = [None] * channels
         for i in range(channels):
             outs[i] = Lambda(lambda x: x[:, :, :, :, 0], name='channel'+str(i)+'_extract')(out)
-            outs[i] = Reshape((input_shape[0] * input_shape[1], 256), name='hw_palette'+str(i))(outs[i])
+            outs[i] = Reshape((height * width, 256), name='hw_palette'+str(i))(outs[i])
             outs[i] = Activation('softmax', name='channel'+str(i))(outs[i])
 
     if build:
