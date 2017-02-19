@@ -9,7 +9,7 @@ from eva.layers.gated_cnn import GatedCNN, GatedCNNs
 from eva.layers.masked_convolution2d import MaskedConvolution2D
 
 def GatedPixelCNN(input_shape, filters, blocks, latent=None, build=True):
-    width, height, channels = input_shape
+    height, width, channels = input_shape
     palette = 256
 
     # TODO: Make it scalable to any amount of palettes.
