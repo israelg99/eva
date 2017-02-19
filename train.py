@@ -13,18 +13,22 @@ from eva.util.mutil import clean_data
 #%% Data.
 DATASET = mnist
 
-DATA, LABELS = clean_data(DATASET.load_data(), rgb=True, latent=False)
+DATA, LABELS = clean_data(DATASET.load_data(), rgb=True, latent=True)
 
 #%% Model.
 MODEL = GatedPixelCNN
 FILTERS = 126
 BLOCKS = 1
 
+LOAD = True
+
 ARGS = (DATA.shape[1:], FILTERS, BLOCKS)
 if MODEL == GatedPixelCNN and LABELS is not None:
     ARGS += (1,)
 
 M = MODEL(*ARGS)
+if LOAD:
+    M.load_weights('model.h5')
 
 M.summary()
 
