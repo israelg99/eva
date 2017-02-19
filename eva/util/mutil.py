@@ -32,6 +32,7 @@ def clean_data(data, rgb=True, latent=True):
     if rgb:
         data = np.repeat(data, 1 if data.shape[3] == 3 else 3, 3)
 
+    labels = None
     if latent:
         labels = np.concatenate((train_l, test_l), axis=0)
 
@@ -40,6 +41,5 @@ def clean_data(data, rgb=True, latent=True):
 
         assert len(labels.shape) == 2
         assert labels.shape[0] == data.shape[0]
-        return data, labels
 
-    return data
+    return data, labels
