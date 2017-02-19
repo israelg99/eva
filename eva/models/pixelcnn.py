@@ -11,9 +11,9 @@ from eva.layers.masked_convolution2d import MaskedConvolution2D
 def PixelCNN(input_shape, filters, blocks, build=True):
     height, width, channels = input_shape
 
-    input_map = Input(shape=input_shape, name='input_map')
+    input_img = Input(shape=input_shape, name='input_img')
 
-    model = MaskedConvolution2D(filters, 7, 7, mask='A', border_mode='same', name='masked2d_A')(input_map)
+    model = MaskedConvolution2D(filters, 7, 7, mask='A', border_mode='same', name='masked2d_A')(input_img)
 
     model = ResidualBlockList(filters, blocks)(model)
     model = PReLU()(model)
