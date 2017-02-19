@@ -1,16 +1,19 @@
 import numpy as np
 
-def generate(model, deterministic=False):
-    get_color = lambda model, pixels, row, col, channel: model.predict_on_batch(pixels[np.newaxis])[channel][0][row*cols+col]
-    to_255 = lambda color: color/255
+def generate(model, latent=None, batch=1, deterministic=False):
+    get_color = lambda model, pixels, cols, row, col, channel, latent=None: model.predict_on_batch(pixels if latent is None else [pixels, latent])[channel][:, row*cols+col]
+    normalize = lambda pixel: pixel/255
 
-    pixels = np.zeros(shape=model.input_shape[1:])
-    rows, cols, channels = pixels.shape
+    shape = model.input_shape
+    pixels = np.zeros(shape=(batch,) + (shape if isinstance(shape, tuple) else shape[0])[1:])
+    latent_vec = None if latent is None else np.expand_dims(np.ones(batch).astype(int)*latent, -1)
+    batch, rows, cols, channels = pixels.shape
     for row in range(rows):
         for col in range(cols):
             for channel in range(channels):
+                ps = get_color(model, pixels, cols, row, col, channel, latent_vec)
                 if deterministic:
-                    pixels[row, col, channel] = to_255(np.argmax(get_color(model, pixels, row, col, channel)))
+                    pixels[:, row, col, channel] = normalize(np.array([np.argmax(p) for p in ps]))
                     continue
-                pixels[row, col, channel] = to_255(np.random.choice(256, p=get_color(model, pixels, row, col, channel)))
+                pixels[:, row, col, channel] = normalize(np.array([np.random.choice(256, p=p) for p in ps]))
     return pixels
