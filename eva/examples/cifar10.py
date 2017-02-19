@@ -17,13 +17,10 @@ from keras.callbacks import TensorBoard, ModelCheckpoint
 from eva.models.pixelcnn import PixelCNN
 from eva.models.gated_pixelcnn import GatedPixelCNN
 
-#%% Data.
-(train, train_l), (test, test_l) = cifar10.load_data()
-data = np.concatenate((train, test), axis=0)
-data = data.astype('float32')
-data /= 255
+from eva.util.mutil import clean_data
 
-labels = np.concatenate((train_l, test_l), axis=0)
+#%% Data.
+data, labels = clean_data(cifar10.load_data(), rgb=True, latent=True)
 
 #%% Model.
 # model = PixelCNN(data.shape[1:], 126, 1)
