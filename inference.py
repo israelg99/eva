@@ -28,7 +28,7 @@ LATENT = None
 # Parse model.
 INPUT = INPUTS[TYPE]
 M = GatedPixelCNN(INPUT, FILTERS, BLOCKS, LATENT)
-M.load_weights('eva/examples/model.h5')
+M.load_weights('model.h5')
 
 #%% Choice (Probabilistic).
 batch = generate(M, LATENT, BATCH, deterministic=False)
