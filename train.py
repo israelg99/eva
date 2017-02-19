@@ -13,20 +13,23 @@ from eva.util.mutil import clean_data
 #%% Data.
 DATASET = cifar10
 
-data, labels = clean_data(DATASET.load_data(), rgb=True, latent=True)
+DATA, LABELS = clean_data(DATASET.load_data(), rgb=True, latent=True)
 
 #%% Model.
-# model = PixelCNN(data.shape[1:], 126, 1)
-model = GatedPixelCNN(data.shape[1:], 126, 1, 1)
+MODEL = GatedPixelCNN
+FILTERS = 126
+BLOCKS = 1
 
-model.summary()
+M = MODEL(DATA.shape[1:], FILTERS, BLOCKS, None if LABELS is None else 1)
 
-plot(model)
+M.summary()
+
+plot(M)
 
 #%% Train.
-model.fit([data, labels]
-          [(np.expand_dims(data[:, :, :, 0].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
-           (np.expand_dims(data[:, :, :, 1].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int),
-           (np.expand_dims(data[:, :, :, 2].reshape(data.shape[0], data.shape[1]*data.shape[2]), -1)*255).astype(int)],
+M.fit([DATA, LABELS]
+          [(np.expand_dims(DATA[:, :, :, 0].reshape(DATA.shape[0], DATA.shape[1]*DATA.shape[2]), -1)*255).astype(int),
+           (np.expand_dims(DATA[:, :, :, 1].reshape(DATA.shape[0], DATA.shape[1]*DATA.shape[2]), -1)*255).astype(int),
+           (np.expand_dims(DATA[:, :, :, 2].reshape(DATA.shape[0], DATA.shape[1]*DATA.shape[2]), -1)*255).astype(int)],
           batch_size=32, nb_epoch=200,
           verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)]) # Only weights because Keras is a bitch.
