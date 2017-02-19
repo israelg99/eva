@@ -19,7 +19,6 @@ TYPE = 'mnist_rgb'
 # Model.
 FILTERS = 126
 BLOCKS = 1
-CLASSES = 10
 
 # Generation.
 BATCH = 10
