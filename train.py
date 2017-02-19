@@ -20,7 +20,11 @@ MODEL = GatedPixelCNN
 FILTERS = 126
 BLOCKS = 1
 
-M = MODEL(DATA.shape[1:], FILTERS, BLOCKS, None if LABELS is None else 1)
+ARGS = (DATA.shape[1:], FILTERS, BLOCKS)
+if MODEL == GatedPixelCNN and LABELS is not None:
+    ARGS += (1,)
+
+M = MODEL(*ARGS)
 
 M.summary()
 
