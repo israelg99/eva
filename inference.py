@@ -22,11 +22,11 @@ BLOCKS = 1
 
 # Generation.
 BATCH = 10
-LATENT = None
+LATENT = 4
 
 # Parse model.
 INPUT = INPUTS[TYPE]
-M = GatedPixelCNN(INPUT, FILTERS, BLOCKS, LATENT)
+M = GatedPixelCNN(INPUT, FILTERS, BLOCKS, None if LATENT is None else 1)
 M.load_weights('model.h5')
 
 #%% Choice (Probabilistic).
