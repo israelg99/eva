@@ -17,3 +17,29 @@ def generate(model, latent=None, batch=1, deterministic=False):
                     continue
                 pixels[:, row, col, channel] = normalize(np.array([np.random.choice(256, p=p) for p in ps]))
     return pixels
+
+def clean_data(data, rgb=True, latent=True):
+    (train, train_l), (test, test_l) = data
+    data = np.concatenate((train, test), axis=0)
+    data = data.astype('float32')
+    data /= 255
+
+    assert len(data.shape) == 3 or len(data.shape) == 4
+
+    if len(data.shape) == 3:
+        data = np.expand_dims(data, -1)
+
+    if rgb:
+        data = np.repeat(data, 1 if data.shape[3] == 3 else 3, 3)
+
+    if latent:
+        labels = np.concatenate((train_l, test_l), axis=0)
+
+        if len(labels.shape) == 1:
+            labels = labels[np.newaxis].T
+
+        assert len(labels.shape) == 2
+        assert labels.shape[0] == data.shape[0]
+        return data, labels
+
+    return data
