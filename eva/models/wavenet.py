@@ -30,8 +30,8 @@ def Wavenet(input_shape, filters, depth, stacks=1, learn_all=True, h=None, build
     out = Convolution1D(nb_bins, 1, border_mode='same')(out)
 
     # https://storage.googleapis.com/deepmind-live-cms/documents/BlogPost-Fig2-Anim-160908-r01.gif
-    # if not learn_all:
-    #     out = layers.Lambda(lambda x: x[:, -1, :], output_shape=(out._keras_shape[-1],), name='last_out')(out)
+    if not learn_all:
+        out = layers.Lambda(lambda x: x[:, -1, :], output_shape=(out._keras_shape[-1],), name='last_out')(out)
 
     out = Activation('softmax')(out)
 
