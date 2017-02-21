@@ -50,3 +50,5 @@ for i in tqdm(range(UNITS)):
     b = np.zeros(shape=(BATCH_SIZE, BINS))
     b[:, np.array([np.random.choice(256, p=p) for p in pr])] = 1
     samples[:, i] = b
+
+np.save(type(M).__name__ + '_samples.npy', samples)
