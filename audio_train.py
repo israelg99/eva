@@ -1,51 +1,30 @@
 #%% Setup.
 import numpy as np
-
-from IPython import embed
+import scipy.io.wavfile
 
 from keras.utils.visualize_util import plot
 from keras.callbacks import TensorBoard, ModelCheckpoint
-
-from eva.data.audio_reader import *
+from keras.utils import np_utils
 
 from eva.models.wavenet import Wavenet, compute_receptive_field
 
-from eva.util.mutil import clean_data, sparse_targets
+from eva.util.mutil import sparse_labels
+
+#%% Data
+RATE, DATA = scipy.io.wavfile.read('./data/undertale/undertale_001_once_upon_a_time.comp.wav')
 
 #%% Model Config.
 MODEL = Wavenet
 FILTERS = 32
 DEPTH = 7
 STACKS = 4
+LENGTH = 1 + compute_receptive_field(RATE, DEPTH, STACKS)[0]
+BINS = 256
 
 LOAD = False
 
-#%% Data Config.
-SAMPLE_RATE = 4000
-FRAGMENT_LENGTH = 1 + compute_receptive_field(SAMPLE_RATE, DEPTH, STACKS)[0]
-FRAGMENT_STRIDE = FRAGMENT_LENGTH//10
-BINS = 256
-LEARN_ALL = True
-USE_ULAW = True
-TEST_FACTOR = 0.01
-SHUFFLE = True
-BATCH_SIZE = 8
-
-#%% Train Config.
-EPOCHS = 200
-
-#%% Data.
-
-# TODO: More preprocessing.
-# TODO: Ensure the data is valid.
-# TODO: Chop silent parts with a threshold.
-generators, examples = generators_vctk('./data/vctk/wav48',
-                                       SAMPLE_RATE, FRAGMENT_LENGTH, BATCH_SIZE,
-                                       FRAGMENT_STRIDE, BINS, LEARN_ALL, USE_ULAW,
-                                       TEST_FACTOR, SHUFFLE, SHUFFLE)
-
 #%% Model.
-INPUT = (FRAGMENT_LENGTH, BINS)
+INPUT = (LENGTH, BINS)
 ARGS = (INPUT, FILTERS, DEPTH, STACKS)
 
 M = MODEL(*ARGS)
@@ -57,9 +36,8 @@ M.summary()
 plot(M)
 
 #%% Train.
-M.fit_generator(sparse_targets(generators['train']), samples_per_epoch=examples['train'],
-      nb_epoch=EPOCHS, verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
+TRAIN = np_utils.to_categorical(DATA, BINS)
+TRAIN = TRAIN[:TRAIN.shape[0]//LENGTH*LENGTH].reshape(TRAIN.shape[0]//LENGTH, LENGTH, BINS)
 
-#%% Debug.
-# d = next(sparse_targets(generators['train']))
-# M.fit(d[0], d[1], 8, 2, 1)
+M.fit(TRAIN, sparse_labels(TRAIN), nb_epoch=2000, batch_size=32,
+      callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
