@@ -114,3 +114,4 @@ logs
 
 # Data
 data/
+*.npy
