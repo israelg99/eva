@@ -111,3 +111,6 @@ logs
 # Checkpoints
 *.h5
 *.png
+
+# Data
+data/vctk
