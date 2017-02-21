@@ -23,12 +23,12 @@ class ResidualBlock(object):
         return Merge(mode='sum')([model, block])
 
 class ResidualBlockList(object):
-    def __init__(self, filters, length):
+    def __init__(self, filters, depth):
         self.filters = filters
-        self.length = length
+        self.depth = depth
 
     def __call__(self, model):
-        for _ in range(self.length):
+        for _ in range(self.depth):
             model = ResidualBlock(self.filters)(model)
 
         return model

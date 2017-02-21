@@ -7,7 +7,7 @@ from eva.layers.residual_block import ResidualBlockList
 from eva.layers.out_channels import OutChannels
 from eva.layers.masked_convolution2d import MaskedConvolution2D
 
-def PixelCNN(input_shape, filters, blocks, build=True):
+def PixelCNN(input_shape, filters, depth, build=True):
     height, width, channels = input_shape
     palette = 256 # TODO: Make it scalable to any amount of palette.
 
@@ -15,7 +15,7 @@ def PixelCNN(input_shape, filters, blocks, build=True):
 
     model = MaskedConvolution2D(filters, 7, 7, mask='A', border_mode='same', name='masked2d_A')(input_img)
 
-    model = ResidualBlockList(filters, blocks)(model)
+    model = ResidualBlockList(filters, depth)(model)
     model = PReLU()(model)
 
     for _ in range(2):
