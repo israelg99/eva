@@ -39,5 +39,5 @@ plot(M)
 TRAIN = np_utils.to_categorical(DATA, BINS)
 TRAIN = TRAIN[:TRAIN.shape[0]//LENGTH*LENGTH].reshape(TRAIN.shape[0]//LENGTH, LENGTH, BINS)
 
-M.fit(TRAIN, sparse_labels(TRAIN), nb_epoch=2000, batch_size=32,
+M.fit(TRAIN, sparse_labels(TRAIN), nb_epoch=2000, batch_size=8,
       callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
