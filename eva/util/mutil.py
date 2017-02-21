@@ -43,3 +43,9 @@ def clean_data(data, rgb=True, latent=True):
         assert labels.shape[0] == data.shape[0]
 
     return data, labels
+
+def sparse_targets(generator):
+    while True:
+        inputs, labels = next(generator)
+        labels = np.expand_dims(np.argmax(labels, -1), -1)
+        yield (inputs, labels)
