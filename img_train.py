@@ -18,11 +18,11 @@ DATA, LABELS = clean_data(DATASET.load_data(), rgb=True, latent=True)
 #%% Model.
 MODEL = GatedPixelCNN
 FILTERS = 126
-BLOCKS = 1
+DEPTH = 12
 
-LOAD = True
+LOAD = False
 
-ARGS = (DATA.shape[1:], FILTERS, BLOCKS)
+ARGS = (DATA.shape[1:], FILTERS, DEPTH)
 if MODEL == GatedPixelCNN and LABELS is not None:
     ARGS += (1,)
 
