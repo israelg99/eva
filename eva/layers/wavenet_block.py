@@ -38,10 +38,10 @@ class WavenetBlocks(object):
         self.h = h
 
     def __call__(self, res):
-        skips = [None] * self.depth
-        for _ in range(self.stacks):
+        skips = [None] * (self.stacks * self.depth)
+        for j in range(self.stacks):
             for i in range(self.depth):
                 res, skip = WavenetBlock(self.filters, i)(res)
-                skips[i] = skip
+                skips[j*self.depth + i] = skip
 
         return res, skips
