@@ -12,23 +12,25 @@ INPUTS = {
     'mnist' : (28, 28, 1)
 }
 
-#%% Args.
-# Input.
+#%% Model.
 TYPE = 'mnist_rgb'
-
-# Model.
+MODEL = GatedPixelCNN
 FILTERS = 126
-BLOCKS = 1
+DEPTH = 12
 
-# Generation.
+#%% Generation.
 BATCH = 10
 LATENT = 4
 DETERMINISTIC = False
 
-# Parse model.
-INPUT = INPUTS[TYPE]
-M = GatedPixelCNN(INPUT, FILTERS, BLOCKS, None if LATENT is None else 1)
+#%% Parse model.
+ARGS = (INPUTS[TYPE], FILTERS, DEPTH)
+if MODEL == GatedPixelCNN and LABELS is not None:
+    ARGS += (1,)
+
+M = MODEL(*ARGS)
 M.load_weights('model.h5')
+
 
 #%% Choice (Probabilistic).
 batch = generate(M, LATENT, BATCH, deterministic=DETERMINISTIC)
