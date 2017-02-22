@@ -14,7 +14,7 @@ from eva.util.mutil import sparse_labels
 
 #%% Generation Config.
 print('Preparing generation.')
-BATCH_SIZE = 8
+BATCH_SIZE = 1
 SECONDS = 3
 SAMPLE = 4000
 
@@ -43,8 +43,8 @@ plot(M)
 #%% Generate.
 print('Generating.')
 
-# TRAINING: 355656
-UNITS = SAMPLE*SECONDS//LENGTH*LENGTH
+UNITS = 355656
+# UNITS = SAMPLE*SECONDS//LENGTH*LENGTH
 
 samples = np.zeros(shape=(BATCH_SIZE, UNITS, BINS))
 audio = np.zeros(shape=(BATCH_SIZE, UNITS))
@@ -59,8 +59,17 @@ for i in tqdm(range(UNITS)):
 
 #%% Save.
 print('Saving.')
-np.save(type(M).__name__ + '_samples.npy', samples)
+np.save('samples.npy', samples)
 np.save(type(M).__name__ + '_audio.npy', audio)
 
 for i in tqdm(range(BATCH_SIZE)):
     scipy.io.wavfile.write('audio' + str(i) + '.wav', RATE, audio[i])
+
+#%% Load.
+# samples = np.load('samples.npy')
+# audio = np.load('audio.npy')
+
+# np.where(audio>130)[0].shape[0] / audio.shape[1] * 100
+# np.where(DATA>135)[0].shape[0] / DATA.shape[0] * 100
+
+# audio[0][4]

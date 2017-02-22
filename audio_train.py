@@ -15,7 +15,7 @@ RATE, DATA = scipy.io.wavfile.read('./data/undertale/undertale_001_once_upon_a_t
 
 #%% Model Config.
 MODEL = Wavenet
-FILTERS = 32
+FILTERS = 256
 DEPTH = 7
 STACKS = 4
 LENGTH = 1 + compute_receptive_field(RATE, DEPTH, STACKS)[0]
