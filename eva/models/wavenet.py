@@ -13,7 +13,7 @@ def Wavenet(input_shape, filters, depth, stacks=1, learn_all=True, h=None, build
     # TODO: Global conditioning?
     # TODO: Local conditioning?
 
-    fragment_len, nb_bins = input_shape
+    _, nb_bins = input_shape
 
     input_audio = Input(input_shape, name='audio_input')
 
