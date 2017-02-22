@@ -1,5 +1,8 @@
 #%% Setup.
 print('Importing.')
+import signal
+import sys
+
 import numpy as np
 import scipy.io.wavfile
 
@@ -14,9 +17,8 @@ from eva.util.mutil import sparse_labels
 
 #%% Generation Config.
 print('Preparing generation.')
-BATCH_SIZE = 1
-SECONDS = 3
-SAMPLE = 4000
+BATCH_SIZE = 15
+LENGTH = 356415 // BATCH_SIZE
 
 #%% Model Config.
 print('Preparing the model.')
@@ -25,7 +27,6 @@ FILTERS = 32
 DEPTH = 7
 STACKS = 4
 RATE = 4000
-LENGTH = 1 + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 BINS = 256
 
 #%% Model.
@@ -41,35 +42,26 @@ M.summary()
 plot(M)
 
 #%% Generate.
+def save():
+    print('Saving.')
+    np.save('samples.npy', samples)
+    np.save(type(M).__name__ + '_audio.npy', audio)
+
+    for i in tqdm(range(BATCH_SIZE)):
+        scipy.io.wavfile.write('audio' + str(i) + '.wav', RATE, audio[i])
+
+
+def save_gracefully(signal, frame):
+    save()
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, save_gracefully)
+
 print('Generating.')
-
-UNITS = 355656
-# UNITS = SAMPLE*SECONDS//LENGTH*LENGTH
-
-samples = np.zeros(shape=(BATCH_SIZE, UNITS, BINS))
-audio = np.zeros(shape=(BATCH_SIZE, UNITS))
-for i in tqdm(range(UNITS)):
-    if i//LENGTH == 0:
-        pr = M.predict_on_batch(samples[:, :LENGTH])[:, i]
-    else:
-        pr = M.predict_on_batch(samples[:, i-LENGTH+1:i+1])[:, -1]
-    samples[:, i] = pr
-    audio[:, i] = np.array([np.random.choice(256, p=p) for p in pr])
-
-
-#%% Save.
-print('Saving.')
-np.save('samples.npy', samples)
-np.save(type(M).__name__ + '_audio.npy', audio)
-
-for i in tqdm(range(BATCH_SIZE)):
-    scipy.io.wavfile.write('audio' + str(i) + '.wav', RATE, audio[i])
-
-#%% Load.
-# samples = np.load('samples.npy')
-# audio = np.load('audio.npy')
-
-# np.where(audio>130)[0].shape[0] / audio.shape[1] * 100
-# np.where(DATA>135)[0].shape[0] / DATA.shape[0] * 100
-
-# audio[0][4]
+samples = np.zeros(shape=(BATCH_SIZE, LENGTH, BINS))
+audio = np.zeros(shape=(BATCH_SIZE, LENGTH))
+for s in tqdm(range(BATCH_SIZE)):
+    for i in tqdm(range(LENGTH)):
+        samples[s, i] = M.predict_on_batch(samples[s][np.newaxis])[:, i]
+        samples[s,i,np.argmax(samples[s,i])] += 1-np.sum(samples[s, i])
+        audio[s, i] = np.random.choice(256, p=samples[s, i])
