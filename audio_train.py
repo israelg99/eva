@@ -18,10 +18,14 @@ MODEL = Wavenet
 FILTERS = 256
 DEPTH = 7
 STACKS = 4
-LENGTH = 1 + compute_receptive_field(RATE, DEPTH, STACKS)[0]
+LENGTH = DATA.shape[0]
 BINS = 256
 
 LOAD = False
+
+#%% Train Config.
+BATCH_SIZE = 5
+EPOCHS = 2000
 
 #%% Model.
 INPUT = (LENGTH, BINS)
@@ -37,7 +41,7 @@ plot(M)
 
 #%% Train.
 TRAIN = np_utils.to_categorical(DATA, BINS)
-TRAIN = TRAIN[:TRAIN.shape[0]//LENGTH*LENGTH].reshape(TRAIN.shape[0]//LENGTH, LENGTH, BINS)
+TRAIN = TRAIN.reshape(BATCH_SIZE, TRAIN.shape[0]//BATCH_SIZE, TRAIN.shape[1])
 
-M.fit(TRAIN, sparse_labels(TRAIN), nb_epoch=2000, batch_size=8,
+M.fit(TRAIN, sparse_labels(TRAIN), nb_epoch=EPOCHS, batch_size=BATCH_SIZE,
       callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
