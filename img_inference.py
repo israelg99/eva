@@ -29,7 +29,7 @@ if MODEL == GatedPixelCNN and LABELS is not None:
     ARGS += (1,)
 
 M = MODEL(*ARGS)
-M.load_weights(type(M).__name__ + '_model.h5')
+M.load_weights('model.h5')
 
 
 #%% Choice (Probabilistic).

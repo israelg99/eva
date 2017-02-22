@@ -38,4 +38,4 @@ plot(M)
 M.fit(DATA if LABELS is None else [DATA, LABELS],
       [(np.expand_dims(DATA[:, :, :, c].reshape(DATA.shape[0], DATA.shape[1]*DATA.shape[2]), -1)*255).astype(int) for c in range(DATA.shape[3])],
       batch_size=32, nb_epoch=200,
-      verbose=1, callbacks=[TensorBoard(), ModelCheckpoint(type(M).__name__ + '_model.h5', save_weights_only=True)]) # Only weights because Keras is a bitch.
+      verbose=1, callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)]) # Only weights because Keras is a bitch.

@@ -59,8 +59,8 @@ for i in tqdm(range(UNITS)):
 
 #%% Save.
 print('Saving.')
-samples = np.save(type(M).__name__ + '_samples.npy', samples)
-audio = np.save(type(M).__name__ + '_audio.npy', audio)
+np.save(type(M).__name__ + '_samples.npy', samples)
+np.save(type(M).__name__ + '_audio.npy', audio)
 
 for i in tqdm(range(BATCH_SIZE)):
-    scipy.io.wavfile.write(type(M).__name__ + '_audio.wav', RATE, audio[i])
+    scipy.io.wavfile.write('audio' + str(i) + '.wav', RATE, audio[i])
