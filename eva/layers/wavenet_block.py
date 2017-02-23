@@ -4,22 +4,17 @@ from eva.layers.causal_atrous_convolution1d import CausalAtrousConvolution1D
 
 
 class WavenetBlock(object):
-    def __init__(self, filters, index):
+    def __init__(self, filters, rate):
         self.filters = filters
-        self.index = index
+        self.rate = rate
 
     def __call__(self, model):
         original = model
 
-        atrous_rate = 2**self.index
-        if self.index > 9:
-            print('Since atrous rates are exponential, more than 9 is not recommended.')
-            print('It is advised to split the stacks with no more than 9 blocks for each stack.')
-
-        tanh_out = CausalAtrousConvolution1D(self.filters, 2, atrous_rate=atrous_rate, border_mode='valid')(model)
+        tanh_out = CausalAtrousConvolution1D(self.filters, 2, atrous_rate=self.rate, border_mode='valid')(model)
         tanh_out = Activation('tanh')(tanh_out)
 
-        sigm_out = CausalAtrousConvolution1D(self.filters, 2, atrous_rate=atrous_rate, border_mode='valid')(model)
+        sigm_out = CausalAtrousConvolution1D(self.filters, 2, atrous_rate=self.rate, border_mode='valid')(model)
         sigm_out = Activation('sigmoid')(sigm_out)
 
         model = Merge(mode='mul')([tanh_out, sigm_out])
@@ -41,7 +36,7 @@ class WavenetBlocks(object):
         skips = [None] * (self.stacks * self.depth)
         for j in range(self.stacks):
             for i in range(self.depth):
-                res, skip = WavenetBlock(self.filters, i)(res)
+                res, skip = WavenetBlock(self.filters, 2**i)(res)
                 skips[j*self.depth + i] = skip
 
         return res, skips
