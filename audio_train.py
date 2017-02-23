@@ -22,8 +22,7 @@ FILTERS = 32
 DEPTH = 8
 STACKS = 4
 BINS = 256
-SAMPLE = 4000
-LENGTH = 1 + compute_receptive_field(SAMPLE, DEPTH, STACKS)[0]
+LENGTH = 1 + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 
 LOAD = False
 
@@ -51,4 +50,4 @@ def train_gen():
         x = np_utils.to_categorical(padded_data[i:i+LENGTH], 256)[np.newaxis]
         yield x, y
 
-M.fit_generator(train_gen(), samples_per_epoch=DATA.shape[0], nb_epoch=EPOCHS, callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)])
+M.fit_generator(train_gen(), samples_per_epoch=RATE*10, nb_epoch=EPOCHS, callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)])
