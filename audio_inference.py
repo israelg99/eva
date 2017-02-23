@@ -14,11 +14,12 @@ from tqdm import tqdm
 from eva.models.wavenet import Wavenet, compute_receptive_field
 
 from eva.util.mutil import sparse_labels
+from eva.util.autil import to_pcm8
 
 #%% Generation Config.
 print('Preparing generation.')
-BATCH_SIZE = 15
-LENGTH = 356415 // BATCH_SIZE
+BATCH_SIZE = 1
+UNITS = 356415
 
 #%% Model Config.
 print('Preparing the model.')
@@ -28,6 +29,7 @@ DEPTH = 7
 STACKS = 4
 RATE = 4000
 BINS = 256
+LENGTH = UNITS // 15
 
 #%% Model.
 print('Loading the model.')
@@ -45,11 +47,12 @@ plot(M)
 def save():
     print('Saving.')
     np.save('samples.npy', samples)
-    np.save(type(M).__name__ + '_audio.npy', audio)
+    np.save('audio.npy', audio)
+
+    pcm8_64bit_wide = to_pcm8(audio)
 
     for i in tqdm(range(BATCH_SIZE)):
-        scipy.io.wavfile.write('audio' + str(i) + '.wav', RATE, audio[i])
-
+        scipy.io.wavfile.write('audio{}.wav'.format(i), RATE, pcm8_64bit_wide[i])
 
 def save_gracefully(signal, frame):
     save()
@@ -58,10 +61,9 @@ def save_gracefully(signal, frame):
 signal.signal(signal.SIGINT, save_gracefully)
 
 print('Generating.')
-samples = np.zeros(shape=(BATCH_SIZE, LENGTH, BINS))
-audio = np.zeros(shape=(BATCH_SIZE, LENGTH))
-for s in tqdm(range(BATCH_SIZE)):
-    for i in tqdm(range(LENGTH)):
-        samples[s, i] = M.predict_on_batch(samples[s][np.newaxis])[:, i]
-        samples[s,i,np.argmax(samples[s,i])] += 1-np.sum(samples[s, i])
-        audio[s, i] = np.random.choice(256, p=samples[s, i])
+samples = np.zeros(shape=(BATCH_SIZE, UNITS, BINS))
+audio = np.zeros(shape=(BATCH_SIZE, UNITS))
+for i in tqdm(range(LENGTH)):
+    samples[:, i] = M.predict(samples[:, :LENGTH], batch_size=1)[:, i]
+    samples[:,i,np.argmax(samples[:,i], axis=-1)] += 1-np.sum(samples[:, i], axis=-1)
+    audio[:, i] = np.array([np.random.choice(256, p=p) for p in samples[:, i]])
