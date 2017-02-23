@@ -40,8 +40,15 @@ M.summary()
 plot(M)
 
 #%% Train.
-BATCH_SIZE = DATA.shape[0]//LENGTH
-TRAIN = np_utils.to_categorical(DATA[:BATCH_SIZE*LENGTH], BINS).reshape(BATCH_SIZE, LENGTH, BINS)
+padded_data = np.zeros(DATA.shape[0]+LENGTH-1)
+padded_data[LENGTH-1:] = DATA
 
-M.fit(TRAIN, sparse_labels(TRAIN)[:, -1], nb_epoch=EPOCHS, batch_size=1,
-      callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)])
+def train_gen():
+    while True:
+        i = np.random.randint(0, DATA.shape[0], dtype=int)
+        data = padded_data[i:i+LENGTH].astype(int)
+        y = data[-1][np.newaxis][np.newaxis]
+        x = np_utils.to_categorical(padded_data[i:i+LENGTH], 256)[np.newaxis]
+        yield x, y
+
+M.fit_generator(train_gen(), samples_per_epoch=DATA.shape[0], nb_epoch=EPOCHS, callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)])
