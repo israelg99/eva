@@ -44,4 +44,4 @@ TRAIN = np_utils.to_categorical(DATA, BINS)
 TRAIN = TRAIN.reshape(BATCH_SIZE, TRAIN.shape[0]//BATCH_SIZE, TRAIN.shape[1])
 
 M.fit(TRAIN, sparse_labels(TRAIN), nb_epoch=EPOCHS, batch_size=1,
-      callbacks=[TensorBoard(), ModelCheckpoint('model.h5')])
+      callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)])
