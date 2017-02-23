@@ -67,3 +67,5 @@ for i in tqdm(range(LENGTH)):
     samples[:, i] = M.predict(samples[:, :LENGTH], batch_size=1)[:, i]
     samples[:,i,np.argmax(samples[:,i], axis=-1)] += 1-np.sum(samples[:, i], axis=-1)
     audio[:, i] = np.array([np.random.choice(256, p=p) for p in samples[:, i]])
+
+save()
