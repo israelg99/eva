@@ -14,16 +14,16 @@ from eva.util.mutil import sparse_labels
 RATE, DATA = scipy.io.wavfile.read('./data/undertale/undertale_001_once_upon_a_time.comp.wav')
 
 #%% Train Config.
-BATCH_SIZE = 15
 EPOCHS = 2000
-LENGTH = DATA.shape[0] // BATCH_SIZE
 
 #%% Model Config.
 MODEL = Wavenet
 FILTERS = 32
-DEPTH = 7
+DEPTH = 8
 STACKS = 4
 BINS = 256
+SAMPLE = 4000
+LENGTH = 1 + compute_receptive_field(SAMPLE, DEPTH, STACKS)[0]
 
 LOAD = False
 
@@ -40,8 +40,8 @@ M.summary()
 plot(M)
 
 #%% Train.
-TRAIN = np_utils.to_categorical(DATA, BINS)
-TRAIN = TRAIN.reshape(BATCH_SIZE, TRAIN.shape[0]//BATCH_SIZE, TRAIN.shape[1])
+BATCH_SIZE = DATA.shape[0]//LENGTH
+TRAIN = np_utils.to_categorical(DATA[:BATCH_SIZE*LENGTH], BINS).reshape(BATCH_SIZE, LENGTH, BINS)
 
-M.fit(TRAIN, sparse_labels(TRAIN), nb_epoch=EPOCHS, batch_size=1,
+M.fit(TRAIN, sparse_labels(TRAIN)[:, -1], nb_epoch=EPOCHS, batch_size=1,
       callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)])
