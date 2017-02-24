@@ -71,7 +71,7 @@ for i in tqdm(range(UNITS+LENGTH-1)):
     samples[:, x] = M.predict(samples[:, i:i+LENGTH], batch_size=1)[0]
     samples[:,x,np.argmax(samples[:,x], axis=-1)] += 1-np.sum(samples[:, x], axis=-1)
     audio[:, x] = np.array([np.random.choice(256, p=p) for p in samples[:, x]])
-    if i-LENGTH+1>0 and ((i-LENGTH+1) % (RATE//2) == 0):
-        print(str((i-LENGTH+1)/(RATE//2)) + " Seconds generated!")
+    if i % (RATE//2) == 0:
+        print(str(i/(RATE//2)) + " Seconds generated!")
 
 save()
