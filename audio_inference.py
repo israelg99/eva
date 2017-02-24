@@ -72,6 +72,6 @@ for i in tqdm(range(UNITS+LENGTH-1)):
     samples[:,x,np.argmax(samples[:,x], axis=-1)] += 1-np.sum(samples[:, x], axis=-1)
     audio[:, x] = np.array([np.random.choice(256, p=p) for p in samples[:, x]])
     if i % (RATE//2) == 0:
-        print(str(i/(RATE//2)) + " Seconds generated!")
+        print(str(i/(RATE)) + " Seconds generated!")
 
 save()
