@@ -22,7 +22,7 @@ FILTERS = 32
 DEPTH = 8
 STACKS = 4
 BINS = 256
-LENGTH = 1 + compute_receptive_field(RATE, DEPTH, STACKS)[0]
+LENGTH = RATE*2 + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 
 LOAD = False
 
