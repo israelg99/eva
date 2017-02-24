@@ -17,7 +17,7 @@ def Wavenet(input_shape, filters, depth, stacks, learn_all=False, h=None, build=
 
     input_audio = Input(input_shape, name='audio_input')
 
-    model = CausalAtrousConvolution1D(filters, 2, atrous_rate=1, border_mode='valid')(input_audio)
+    model = CausalAtrousConvolution1D(filters, 2, mask_type='A', atrous_rate=1, border_mode='valid')(input_audio)
 
     out, skip_connections = WavenetBlocks(filters, depth, stacks)(model)
 
