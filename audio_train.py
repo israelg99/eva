@@ -44,7 +44,7 @@ padded_data[LENGTH-1:] = DATA
 
 def train_gen():
     while True:
-        i = np.random.randint(0, DATA.shape[0], dtype=int)
+        i = np.random.randint(0, DATA.shape[0]-2, dtype=int)
         data = padded_data[i:i+LENGTH].astype(int)
         y = data[-1][np.newaxis][np.newaxis]
         x = np_utils.to_categorical(padded_data[i:i+LENGTH], 256)[np.newaxis]
