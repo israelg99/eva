@@ -19,10 +19,10 @@ EPOCHS = 2000
 #%% Model Config.
 MODEL = Wavenet
 FILTERS = 32
-DEPTH = 8
-STACKS = 4
+DEPTH = 10
+STACKS = 5
 BINS = 256
-LENGTH = RATE*2 + compute_receptive_field(RATE, DEPTH, STACKS)[0]
+LENGTH = RATE + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 
 LOAD = False
 

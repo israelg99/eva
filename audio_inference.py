@@ -24,11 +24,11 @@ UNITS = 356415
 print('Preparing the model.')
 MODEL = Wavenet
 FILTERS = 32
-DEPTH = 8
+DEPTH = 10
 STACKS = 4
 BINS = 256
+LENGTH = RATE + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 RATE = 4000
-LENGTH = RATE*2 + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 
 #%% Model.
 print('Loading the model.')
@@ -75,3 +75,11 @@ for i in tqdm(range(UNITS+LENGTH-1)):
         print(str(i/(RATE)) + " Seconds generated!")
 
 save()
+
+i = np.random.randint(50000)
+x = i+LENGTH-1
+samples[:, x] = M.predict(samples[:, i:i+LENGTH], batch_size=1)[0]
+samples[:,x,np.argmax(samples[:,x], axis=-1)] += 1-np.sum(samples[:, x], axis=-1)
+audio[:, x] = np.array([np.random.choice(256, p=p) for p in samples[:, x]])
+if i % (RATE//2) == 0:
+    print(str(i/(RATE)) + " Seconds generated!")
