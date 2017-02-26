@@ -1,4 +1,6 @@
 #%% Setup.
+import sys
+
 import numpy as np
 import scipy.io.wavfile
 
@@ -15,12 +17,13 @@ RATE, DATA = scipy.io.wavfile.read('./data/undertale/undertale_001_once_upon_a_t
 
 #%% Train Config.
 EPOCHS = 2000
+BATCH = 8
 
 #%% Model Config.
 MODEL = Wavenet
 FILTERS = 32
 DEPTH = 10
-STACKS = 5
+STACKS = 4
 BINS = 256
 LENGTH = RATE + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 
@@ -50,4 +53,7 @@ def train_gen():
         x = np_utils.to_categorical(padded_data[i:i+LENGTH], 256)[np.newaxis]
         yield x, y
 
-M.fit_generator(train_gen(), samples_per_epoch=RATE*10, nb_epoch=EPOCHS, callbacks=[TensorBoard(), ModelCheckpoint('model.h5', save_weights_only=True)])
+# Fuck theano and its recursions <3
+sys.setrecursionlimit(50000)
+
+M.fit_generator(train_gen(), samples_per_epoch=RATE*10, nb_epoch=EPOCHS, callbacks=[ModelCheckpoint('model.h5')])
