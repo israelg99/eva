@@ -10,8 +10,8 @@ class CausalAtrousConvolution1D(AtrousConvolution1D):
         self.length = self.atrous_rate * (self.filter_length - 1)
 
         # XXX debug.
-        if mask_type == 'A':
-            self.length += 1
+        # if mask_type == 'A':
+        #     self.length += 1
 
     def get_output_shape_for(self, input_shape):
         length = conv_output_length(input_shape[1] + self.length,
