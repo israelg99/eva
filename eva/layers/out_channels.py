@@ -12,7 +12,8 @@ class OutChannels(object):
 
     def __call__(self, model):
         if self.channels == 1:
-            outs = Convolution2D(1, 1, 1, activation='sigmoid', border_mode='valid')(model)
+            outs = Convolution2D(1, 1, 1, border_mode='valid')(model)
+            outs = Activation('sigmoid')(outs)
         else:
             out = self.cxp(self.palette*self.channels, 1, 1, border_mode='valid', name='channels_mult_palette')(model)
             out = Reshape((self.height, self.width, self.palette, self.channels), name='palette_channels')(out)
