@@ -20,6 +20,7 @@ class MaskedConvolution2D(Convolution2D):
 
         self.mask = np.ones(self.W_shape)
 
+        assert mask.shape[0] == mask.shape[1]
         filter_size = self.mask.shape[0]
         filter_center = filter_size / 2
 
