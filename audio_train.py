@@ -1,4 +1,5 @@
 #%% Setup.
+import signal
 import sys
 
 import numpy as np
@@ -22,8 +23,8 @@ BATCH = 8
 #%% Model Config.
 MODEL = Wavenet
 FILTERS = 32
-DEPTH = 10
-STACKS = 4
+DEPTH = 9
+STACKS = 2
 BINS = 256
 LENGTH = RATE + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 
@@ -47,11 +48,26 @@ padded_data[LENGTH-1:] = DATA
 
 def train_gen():
     while True:
-        i = np.random.randint(0, DATA.shape[0]-2, dtype=int)
-        data = padded_data[i:i+LENGTH].astype(int)
-        y = data[-1][np.newaxis][np.newaxis]
-        x = np_utils.to_categorical(padded_data[i:i+LENGTH], 256)[np.newaxis]
+        i = np.random.randint(0, DATA.shape[0]-2, size=BATCH, dtype=int)
+
+        data = np.zeros((BATCH, LENGTH))
+        y = np.zeros((BATCH, 1))
+        x = np.zeros((BATCH, LENGTH, BINS))
+        for s in range(BATCH):
+            si = i[s]
+            data[s] = padded_data[si:si+LENGTH].astype(int)
+            y[s] = data[s, -1]
+            x[s, list(range(LENGTH)), data[s].astype(int)] = 1
         yield x, y
+
+def save():
+    M.save('model.h5')
+
+def save_gracefully(signal, frame):
+    save()
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, save_gracefully)
 
 # Fuck theano and its recursions <3
 sys.setrecursionlimit(50000)
