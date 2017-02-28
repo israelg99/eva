@@ -7,7 +7,7 @@ from eva.layers.causal_atrous_convolution1d import CausalAtrousConvolution1D
 from eva.layers.wavenet_block import WavenetBlock, WavenetBlocks
 
 
-def Wavenet(input_shape, filters, depth, stacks, learn_all=False, h=None, build=True):
+def Wavenet(input_shape, filters, depth, stacks, last=0, h=None, build=True):
     # TODO: Soft targets? A float to make targets a gaussian with stdev.
     # TODO: Train only receptive field. The temporal-first outputs are computed from zero-padding.
     # TODO: Global conditioning?
@@ -30,8 +30,8 @@ def Wavenet(input_shape, filters, depth, stacks, learn_all=False, h=None, build=
     out = Convolution1D(nb_bins, 1, border_mode='same')(out)
 
     # https://storage.googleapis.com/deepmind-live-cms/documents/BlogPost-Fig2-Anim-160908-r01.gif
-    if not learn_all:
-        out = Lambda(lambda x: x[:, -1, :], output_shape=(out._keras_shape[-1],), name='last_out')(out)
+    if last > 0:
+        out = Lambda(lambda x: x[:, -last:], output_shape=(last, out._keras_shape[2]), name='last_out')(out)
 
     out = Activation('softmax')(out)
 
