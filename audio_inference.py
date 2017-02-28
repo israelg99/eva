@@ -18,17 +18,19 @@ from eva.util.autil import to_pcm8
 
 #%% Generation Config.
 print('Preparing generation.')
+RATE = 4000
 UNITS = 356415
 
 #%% Model Config.
 print('Preparing the model.')
 MODEL = Wavenet
 FILTERS = 32
-DEPTH = 10
-STACKS = 4
+DEPTH = 9
+STACKS = 2
 BINS = 256
-LENGTH = RATE + compute_receptive_field(RATE, DEPTH, STACKS)[0]
-RATE = 4000
+LAST = RATE
+LENGTH = LAST + compute_receptive_field(RATE, DEPTH, STACKS)[0]
+
 
 #%% Model.
 print('Loading the model.')
@@ -60,7 +62,7 @@ def save_gracefully(signal, frame):
 
 signal.signal(signal.SIGINT, save_gracefully)
 
-BATCH_SIZE = 1
+BATCH_SIZE = 3
 
 samples = np.zeros(shape=(BATCH_SIZE, UNITS, BINS))
 audio = np.zeros(shape=(BATCH_SIZE, UNITS))
