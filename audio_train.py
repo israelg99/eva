@@ -23,16 +23,17 @@ BATCH = 8
 #%% Model Config.
 MODEL = Wavenet
 FILTERS = 32
-DEPTH = 9
-STACKS = 2
+DEPTH = 10
+STACKS = 5
 BINS = 256
-LENGTH = RATE + compute_receptive_field(RATE, DEPTH, STACKS)[0]
+LAST = RATE
+LENGTH = LAST + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 
-LOAD = False
+LOAD = True
 
 #%% Model.
 INPUT = (LENGTH, BINS)
-ARGS = (INPUT, FILTERS, DEPTH, STACKS)
+ARGS = (INPUT, FILTERS, DEPTH, STACKS, LAST)
 
 M = MODEL(*ARGS)
 if LOAD:
@@ -51,12 +52,12 @@ def train_gen():
         i = np.random.randint(0, DATA.shape[0]-2, size=BATCH, dtype=int)
 
         data = np.zeros((BATCH, LENGTH))
-        y = np.zeros((BATCH, 1))
+        y = np.zeros((BATCH, LAST, 1))
         x = np.zeros((BATCH, LENGTH, BINS))
         for s in range(BATCH):
             si = i[s]
             data[s] = padded_data[si:si+LENGTH].astype(int)
-            y[s] = data[s, -1]
+            y[s] = np.expand_dims(data[s, -LAST:], -1)
             x[s, list(range(LENGTH)), data[s].astype(int)] = 1
         yield x, y
 
@@ -72,4 +73,4 @@ signal.signal(signal.SIGINT, save_gracefully)
 # Fuck theano and its recursions <3
 sys.setrecursionlimit(50000)
 
-M.fit_generator(train_gen(), samples_per_epoch=RATE*10, nb_epoch=EPOCHS, callbacks=[ModelCheckpoint('model.h5')])
+M.fit_generator(train_gen(), samples_per_epoch=RATE//4, nb_epoch=EPOCHS, callbacks=[ModelCheckpoint('model.h5')])
