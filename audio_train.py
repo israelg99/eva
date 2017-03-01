@@ -62,7 +62,7 @@ def train_gen():
         yield x, y
 
 def save():
-    M.save('model.h5')
+    M.save('sigint_model.h5')
 
 def save_gracefully(signal, frame):
     save()
