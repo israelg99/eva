@@ -16,9 +16,11 @@ from eva.models.wavenet import Wavenet, compute_receptive_field
 from eva.util.mutil import sparse_labels
 from eva.util.autil import to_pcm8
 
+#%% Data.
+RATE, DATA = scipy.io.wavfile.read('./data/undertale/undertale_001_once_upon_a_time.comp.wav')
+
 #%% Generation Config.
 print('Preparing generation.')
-RATE = 4000
 UNITS = 356415
 
 #%% Model Config.
@@ -64,8 +66,14 @@ signal.signal(signal.SIGINT, save_gracefully)
 
 BATCH_SIZE = 1
 
-samples = np.zeros(shape=(BATCH_SIZE, UNITS, BINS))
-audio = np.zeros(shape=(BATCH_SIZE, UNITS))
+samples = np.zeros(shape=(1, UNITS, BINS))
+samples[0, list(range(LENGTH-1)), DATA[:LENGTH-1].astype(int)]
+samples = np.repeat(samples, BATCH_SIZE, axis=0)
+
+audio = np.zeros(shape=(1, UNITS))
+audio[0, :LENGTH-1] = DATA[:LENGTH-1]
+audio = np.repeat(audio, BATCH_SIZE, axis=0)
+
 for i in tqdm(range(UNITS+LENGTH-1)):
     if i >= UNITS-1:
         break
