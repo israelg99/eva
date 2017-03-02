@@ -29,7 +29,7 @@ BINS = 256
 LAST = RATE
 LENGTH = LAST + compute_receptive_field(RATE, DEPTH, STACKS)[0]
 
-LOAD = True
+LOAD = False
 
 #%% Model.
 INPUT = (LENGTH, BINS)
