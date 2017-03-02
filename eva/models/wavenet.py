@@ -42,6 +42,6 @@ def Wavenet(input_shape, filters, depth, stacks, last=0, h=None, build=True):
     return model
 
 def compute_receptive_field(sample_rate, depth, stacks):
-    receptive_field = stacks * (2 ** depth * 2) - (stacks - 1)
+    receptive_field = stacks * (2 ** depth) - (stacks - 1)
     receptive_field_ms = (receptive_field * 1000) / sample_rate
     return receptive_field, receptive_field_ms
